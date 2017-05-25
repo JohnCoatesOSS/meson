@@ -1561,6 +1561,18 @@ class LinuxArmCrossCompileTests(BasePlatformTests):
         compdb = self.get_compdb()
         self.assertNotIn('-DBUILD_ENVIRONMENT_ONLY', compdb[0]['command'])
 
+    def test_vala_args_cross_environment_pollution(self):
+        '''
+        Test that VALAFLAGS and cross environment's vala_args are separate.
+        '''
+        testdir = os.path.join(self.vala_test_dir, '1 basic')
+        #testdir = os.path.join(self.common_test_dir, '3 static')
+        os.environ['VALAFLAGS'] = '--define=BUILD_ENVIRONMENT_ONLY'
+        self.init(testdir)
+        compdb = self.get_compdb()
+        self.assertNotIn('--define=BUILD_ENVIRONMENT_ONLY', compdb[0]['command'])
+        self.assertIn('--define=HOST_ENVIRONMENT_ONLY', compdb[0]['command'])
+
 class RewriterTests(unittest.TestCase):
 
     def setUp(self):
